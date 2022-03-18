@@ -1,43 +1,91 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 25 07:56:33 2021
-
+searching for accounts of unidentified 
+contractors and searching for mutual settlements
 @author: kklos
 """
 
+import datetime as dt
 import pandas as pd
 import numpy as np
-import datetime
+
 
 
 def upperstr(poz):
+    """
+    Returns Uppercase String
+    Parameters
+    ----------
+    poz : string.
 
-    if type(poz) == str:
-        return(poz.upper())
+    Returns
+    -------
+    Returns Uppercase String
 
+    """
+
+    if isinstance(poz, str):
+        return poz.upper()
+    return poz
 
 def nowy_numer(string):
+    """
+    Separate only intiger value from stirng
+
+    Parameters
+    ----------
+    string : string
+
+    Returns
+    -------
+    nowy_string : string of intiger.
+
+    """
 
     string = str(string)
-    n = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-    st = ''
+    numer = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    nowy_string = ''
     for _ in string:
-        if _ in n:
-            st += _
+        if _ in numer:
+            nowy_string += _
 
-    return st
+    return nowy_string
 
 
 def szukanie_249(szukana, baza):
+    """
+    changing the payment number to the system order number
+
+    Parameters
+    ----------
+    szukana : payment number.
+
+    Returns
+    -------
+    system order number.
+
+    """
 
     if szukana in baza.values:
         numer = np.argwhere(baza.values == szukana)
         return baza.values[numer[0, 0]]
-
+    return szukana
 
 def log(tekst):
+    """
+    create log
 
-    print(f'>>>>> {tekst}', datetime.datetime.now())
+    Parameters
+    ----------
+    tekst : log.
+
+    Returns
+    -------
+    log + time
+
+    """
+    print(f'>>>>> {tekst}', dt.datetime.now())
 
 
 log('Start programu')
@@ -114,7 +162,7 @@ for pozycja in podwojne:
         pozycje_248_nierowne.append(pozycja)
 
 
-zakres_248 = plik_249['liczby'].isin([_ for _ in pozycje_248])
+zakres_248 = plik_249['liczby'].isin(pozycje_248)
 eksport_248 = plik_249[zakres_248]
 eksport_248['faktura'] = '248'
 eksport_248['numer_konta'] = '248'
@@ -122,8 +170,7 @@ eksport_248['numer_konta'] = '248'
 plik_249 = plik_249[-zakres_248]
 
 pozycje_248_nierowne.remove('')
-zakres_248_nierowne = plik_249['liczby'].isin(
-    [_ for _ in pozycje_248_nierowne])
+zakres_248_nierowne = plik_249['liczby'].isin(pozycje_248_nierowne)
 eksport_248_nierowne = plik_249[zakres_248_nierowne]
 eksport_248_nierowne['faktura'] = '248_nierowne'
 eksport_248_nierowne['numer_konta'] = '248_nierowne'
@@ -193,7 +240,7 @@ for pozycja in podwojne:
         pozycje_248_nierowne.append(pozycja)
 
 
-zakres_248 = plik_249['faktura'].isin([_ for _ in pozycje_248])
+zakres_248 = plik_249['faktura'].isin(pozycje_248)
 eksport_248_xxx = plik_249[zakres_248]
 eksport_248_xxx['numer_konta'] = '248'
 
@@ -201,11 +248,10 @@ plik_249 = plik_249[-zakres_248]
 
 try:
     pozycje_248_nierowne.remove('')
-except:
+except ValueError:
     pass
 
-zakres_248_nierowne = plik_249['faktura'].isin(
-    [_ for _ in pozycje_248_nierowne])
+zakres_248_nierowne = plik_249['faktura'].isin(pozycje_248_nierowne)
 eksport_248_nierowne_xxx = plik_249[zakres_248_nierowne]
 eksport_248_nierowne_xxx['numer_konta'] = '248_nierowne'
 
@@ -217,11 +263,13 @@ eksport.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\249\\gotowe pliki\\200.xl
                  header=False, index=False,)
 eksport_248.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\249\\gotowe pliki\\248.xlsx',
                      header=False, index=False,)
-eksport_248_nierowne.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\249\\gotowe pliki\\248_nierowne.xlsx',
+eksport_248_nierowne.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\'+
+                              '249\\gotowe pliki\\248_nierowne.xlsx',
                               header=False, index=False,)
 eksport_248_xxx.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\249\\gotowe pliki\\248_xxx.xlsx',
                          header=False, index=False,)
-eksport_248_nierowne_xxx.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\249\\gotowe pliki\\248_nierowne_xxx.xlsx',
+eksport_248_nierowne_xxx.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\'+
+                                  '249\\gotowe pliki\\248_nierowne_xxx.xlsx',
                                   header=False, index=False,)
 plik_249.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\249\\gotowe pliki\\249.xlsx',
                   header=False, index=False,)

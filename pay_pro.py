@@ -1,26 +1,48 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 27 10:06:17 2021
-
+processing of the payment file so that
+they can be downloaded to the system
 @author: kklos
 """
-
+import datetime as dt
 import pandas as pd
 import numpy as np
-import datetime
 
 
-print('start: ', datetime.datetime.now())
+print('start: ', dt.datetime.now())
 
 
 def szukanie_numeru(szukana):
+    """
+    changing the payment number to the system order number
+
+    Parameters
+    ----------
+    szukana : payment number.
+
+    Returns
+    -------
+    system order number.
+
+    """
 
     if szukana in dane.values:
-        numer = np.argwhere(dane.values == szukana)
-        return dane.values[numer[0, 0]]
-
+        pozycja = np.argwhere(dane.values == szukana)
+        return dane.values[pozycja[0, 0]]
+    return szukana
 
 def dzielenie(obiekt, nazwa):
+    """
+    creating a new payment file, ready to be downloaded to the system
+
+    Parameters
+    ----------
+    obiekt : pd.read.csv
+    nazwa : name of future file.
+
+    """
+
     zbior = set(obiekt.Trans_ID)
 
     for paczka in zbior:
@@ -32,7 +54,8 @@ def dzielenie(obiekt, nazwa):
         kwota = round(nowy_plik.Kwota.sum(), 2)
         nowy_plik.Kwota = [str(poz).replace(',', '.')
                            for poz in nowy_plik.Kwota]
-        nowy_plik.to_excel(f'C:\\Users\\kklos\\Desktop\\Programy\\Pay Pro\\do zaciągnięcia\\{dzien}_{paczka}_{nazwa}_{kwota}_PLN.xlsx',
+        nowy_plik.to_excel('C:\\Users\\kklos\\Desktop\\Programy\\Pay Pro\\do '+
+                           f'zaciągnięcia\\{dzien}_{paczka}_{nazwa}_{kwota}_PLN.xlsx',
                            index=False)
 
 
@@ -45,7 +68,7 @@ sprzedaz = sprzedaz.rename(columns={'Sprzedawca': 'Typ_operacji', 'Przyjęcie': 
 
 sprzedaz = sprzedaz.sort_index()
 
-print('zaciągnięcie sprzedaży: ', datetime.datetime.now())
+print('zaciągnięcie sprzedaży: ', dt.datetime.now())
 
 zwroty = pd.read_csv('C:\\Users\\kklos\\Desktop\\Programy\\Pay Pro\\pliki\\z.csv',
                      sep=',', usecols=(1, 3, 4, 5, 8, 10))
@@ -56,7 +79,7 @@ zwroty = zwroty.rename(columns={'Sprzedawca': 'Typ_operacji', 'Data wykonania': 
                                 'ID wypłaty': 'Trans_ID'})
 zwroty.Kwota = [-zl for zl in zwroty.Kwota]
 
-print('zaciągnięcie zwrotów: ', datetime.datetime.now())
+print('zaciągnięcie zwrotów: ', dt.datetime.now())
 
 zwroty['Imię_i_nazwisko'] = None
 
@@ -76,7 +99,7 @@ transakcje = transakcje[['Typ_operacji', 'Data', 'Trans_ID', 'Order_ID', 'Kwota'
                          'Saldo', 'Opis', 'Imię_i_nazwisko', 'ID_sesji']]
 
 
-print('łączenie wszystkich transakcji: ', datetime.datetime.now())
+print('łączenie wszystkich transakcji: ', dt.datetime.now())
 
 Militaria = transakcje[transakcje.Typ_operacji == 134748]
 
@@ -86,7 +109,7 @@ Militaria.Order_ID = Militaria.ID_sesji
 
 dzielenie(Militaria, 'Militaria')
 
-print('Militaria gotowe: ', datetime.datetime.now())
+print('Militaria gotowe: ', dt.datetime.now())
 
 
 Militaria_Shop = transakcje[transakcje.Typ_operacji == 134751]
@@ -99,7 +122,7 @@ for numer in Militaria_Shop.Opis:
 
     try:
         order_id.append(numer_ms[1])
-    except:
+    except ValueError:
         order_id.append(numer)
 
 
@@ -107,7 +130,7 @@ Militaria_Shop.Order_ID = order_id
 
 dzielenie(Militaria_Shop, 'Militaria Shop')
 
-print('Militaria Shop gotowe: ', datetime.datetime.now())
+print('Militaria Shop gotowe: ', dt.datetime.now())
 
 
 Militaria_2 = transakcje[transakcje.Typ_operacji == 79847]
@@ -119,7 +142,7 @@ for numer in Militaria_2.Opis:
 
     try:
         order_id.append(numer[0:numer.index(' / ')])
-    except:
+    except ValueError:
         order_id.append(numer)
 
 Militaria_2.Order_ID = order_id
@@ -127,7 +150,7 @@ Militaria_2.Order_ID = order_id
 dzielenie(Militaria_2, 'Militaria x')
 
 
-print('Militaria 2 gotowe: ', datetime.datetime.now())
+print('Militaria 2 gotowe: ', dt.datetime.now())
 
 
-print('Koniec: ', datetime.datetime.now())
+print('Koniec: ', dt.datetime.now())
